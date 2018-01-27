@@ -1,0 +1,25 @@
+#构建nginx
+nginx:
+    build: ./nginx
+    ports:
+      - "40080:80"
+    #实例内部使用连接mysql实例，这里端口号要使用mysql实例的内部端口号
+    links:
+      - "mysql"
+    #挂在两个目录，一个日志目录，一个web目录
+    volumes:
+      - /var/www/html:/var/www/html
+
+#构建mysql
+mysql:
+    build: ./mysql
+    ports:
+      - "43306:3306"
+    # 将msyql的数据库文件存储在本地
+    volumes:
+      - /var/data/mysql:/var/lib/mysql
+    #此处是为了解决mysql的编码问题，防止中文乱码
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --init-connect='SET NAMES utf8;' --innodb-flush-log-at-trx-commit=0
+    environment:
+      #设置mysql root用户初始密码为123456
+      MYSQL_ROOT_PASSWORD: 123456
